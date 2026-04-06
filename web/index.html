@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 5 DevOps</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #112233;
+        --muted: #4c5f75;
+        --accent: #0e7a64;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at top, #d9efe9 0%, var(--bg) 50%);
+        color: var(--text);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(760px, 100%);
+        background: var(--card);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 12px 36px rgba(17, 34, 51, 0.12);
+      }
+
+      h1 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+      }
+
+      p {
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      ul {
+        padding-left: 20px;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Automated Cloud Monitoring Dashboard</h1>
+      <p>
+        Static website served with Nginx and monitored using Prometheus + Grafana.
+      </p>
+      <ul>
+        <li>Web application: <a href="/">Nginx</a></li>
+        <li>Prometheus: <a href="http://44.192.38.118:9090">44.192.38.118:9090</a></li>
+        <li>Grafana: <a href="http://44.192.38.118:3000">44.192.38.118:3000</a></li>
+      </ul>
+      <p>Default Grafana credentials: admin / admin</p>
+    </main>
+  </body>
+</html>

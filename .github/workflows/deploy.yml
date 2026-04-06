@@ -1,0 +1,59 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+      - name: Configure known hosts
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+
+          if [ -z "$EC2_HOST" ]; then
+            echo "EC2_HOST secret is empty. Set it to public IPv4 or public DNS only."
+            exit 1
+          fi
+
+          if ! getent hosts "$EC2_HOST" >/dev/null 2>&1; then
+            echo "Cannot resolve EC2_HOST: $EC2_HOST"
+            echo "Set EC2_HOST to EC2 Public IPv4 (recommended) or Public DNS only."
+            echo "Do not include ssh://, user@, spaces, or port values."
+            exit 1
+          fi
+
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Verify SSH connectivity
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "echo SSH connection successful"
+
+      - name: Sync project to EC2
+        run: |
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            ./ "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_APP_PATH }}"
+
+      - name: Deploy with Docker Compose on EC2
+        run: |
+          ssh "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << 'EOF'
+            set -e
+            cd "${{ secrets.EC2_APP_PATH }}"
+            docker compose pull
+            docker compose up -d --remove-orphans
+          EOF
